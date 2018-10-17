@@ -4,6 +4,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 import re
 import json
+import random
+from logzero import logger
+import time
 from lxml import etree
 import datetime
 from io import BytesIO
@@ -11,6 +14,16 @@ from keras.models import load_model
 import numpy as np
 import os
 from PIL import Image, ImageOps
+
+
+class Trend(dict):
+    def __init__(self, *args, **kwargs):
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+        dict.__init__(self, **kwargs)
+
+    def __str__(self):
+        return json.dumps(self)
 
 
 class Baidu(object):
@@ -21,7 +34,30 @@ class Baidu(object):
         self.driver = webdriver.Chrome(chrome_options=chrome_options)
 
     def login(self, username, password):
-        pass
+        url = "http://index.baidu.com/#/"
+        self.driver.get(url)
+        logger.info("跳转到登录页")
+        self.driver.find_element_by_class_name("username-text").click()
+        time.sleep(3)
+        logger.info("点击弹出登录框")
+        self.driver.find_element_by_id("TANGRAM__PSP_4__userName").clear()
+        self.driver.find_element_by_id("TANGRAM__PSP_4__password").clear()
+        logger.info("输入用户名🔐...")
+        for ele in list(username):
+            self.driver.find_element_by_id(
+                "TANGRAM__PSP_4__userName").send_keys(ele)
+            time.sleep(random.random())
+        logger.info("输入用密码🔐")
+        for ele in list(password):
+            self.driver.find_element_by_id(
+                "TANGRAM__PSP_4__password").send_keys(ele)
+            time.sleep(random.random())
+        self.driver.find_element_by_id("TANGRAM__PSP_4__submit").click()
+        logger.info("发送表单")
+        cookies = self.driver.get_cookies()
+        logger.info("登录成功😀\n保存baidu.cookie文件")
+        with open('baidu.cookie', 'w') as f:
+            f.write(json.dumps(cookies))
 
     def parse(self, image):
         y = self.model.predict(image)
@@ -52,7 +88,7 @@ class Baidu(object):
         document.getElementsByClassName('view-value')[0].innerHTML = '%s'
         """
 
-    def main(self, keyword, start, end):
+    def search(self, keyword, start, end):
         self.bootstrap()
         url_args = {'tpl': 'trend', 'word': keyword.encode('gbk')}
         url = 'http://index.baidu.com/?' + urlencode(url_args)
@@ -60,11 +96,15 @@ class Baidu(object):
         res1 = self.get_res1(text)
         res2 = self.get_res2(text)
         res3_datas = self.get_res3(res1, res2, start, end)
+        rsts = []
         for ele in res3_datas:
             res3 = ele['res3']
             date = ele['date']
-            trend = self.get_index(res1, res2, res3)
-            print({'date': date, 'trend': trend})
+            number = self.get_index(res1, res2, res3)
+            trend = Trend(word=keyword, date=date, number=number)
+            logger.info('{}:{}的指数{}'.format(date, keyword, number))
+            rsts.append(trend)
+        return rsts
 
     def get(self, url, binary=False):
         res = requests.get(url, headers=self.headers)
@@ -181,13 +221,3 @@ class Baidu(object):
         """ % (res_var, final_script, res_var, res_var)
         result = self.driver.execute_script(res_script)
         return result
-
-
-def main():
-    bd = Baidu()
-    bd.load_model()
-    bd.main('btc', '2018-10-01', '2018-10-08')
-
-
-if __name__ == '__main__':
-    main()
