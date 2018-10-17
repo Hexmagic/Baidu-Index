@@ -16,3 +16,9 @@ pip install -r requirement.txt
 
 # 流程
 具体流程参考我的简书博文 [百度指数抓取 selenium 💗 Keras](https://www.jianshu.com/p/5f29bc4552e4)
+
+# 模型
+
+模型准确的截图，使用了增强后的数据训练的，精确度达到97%，对于百度的原始图片估计可以做到99%的精准度
+
+![训练结果][./screenshoot.png]
