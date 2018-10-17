@@ -1,0 +1,9 @@
+requests
+selenium
+lxml
+keras
+numpy
+tensorflow
+Augmentor
+PIL
+sklearn
