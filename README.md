@@ -17,8 +17,21 @@ pip install -r requirement.txt
 # 流程
 具体流程参考我的简书博文 [百度指数抓取 selenium 💗 Keras](https://www.jianshu.com/p/5f29bc4552e4)
 
-# 模型
+# 模型数据生成
+模型使用tensorflow作为后端进行训练，这里简单说下怎么生成训练和测试样本,切换到model目录,运行下面的脚本
+```
+python generate_date.py
+
+```
+根据提示生成测试和训练脚本，生成的数据分别位于test和train目录
+> 确保该目录在生成之前不存在
+# 训练模型
+生成好训练和测试数据直接运行下面的命令
+```
+python train_model.py
+```
+该命令生成了一个序列化的模型，名字为model.h5
 
 模型准确的截图，使用了增强后的数据训练的，精确度达到97%，对于百度的原始图片估计可以做到99%的精准度
 
-![训练结果][./screenshoot.png]
+![训练结果](/screenshoot.png)
