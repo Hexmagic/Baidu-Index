@@ -5,6 +5,6 @@ keras
 numpy
 tensorflow
 Augmentor
-PIL
+Pillow
 sklearn
 logzero
