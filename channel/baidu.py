@@ -55,7 +55,6 @@ class Baidu(object):
         self.driver.find_element_by_id("TANGRAM__PSP_4__submit").click()
         logger.info("发送表单")
         cookies = self.driver.get_cookies()
-        logger.info("登录成功😀\n保存baidu.cookie文件")
         with open('baidu.cookie', 'w') as f:
             f.write(json.dumps(cookies))
 
@@ -84,6 +83,15 @@ class Baidu(object):
         }
         with open('%s/raphael.js' % base_dir, 'r') as f:
             self.driver.execute_script(f.read())
+        res = requests.get(
+            "http://index.baidu.com/Interface/api/pcPass", headers=self.headers
+        )
+        data = json.loads(res.text)
+        var = data["data"]["result"]["isLogin"]
+        if int(var) == 1:
+            logger.info("验证登录成功")
+        else:
+            logger.info("登录失败! 可能需要输入验证码或者手机验证码，你可以尝试手动测试登录保存cookie，使用正确的cookie文件进行后续操作避免该问题")
         self.js_template = """
         document.getElementsByClassName('view-value')[0].innerHTML = '%s'
         """
