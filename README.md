@@ -19,9 +19,6 @@ pip install -r requirement.txt
 安装好依赖包,就可以开始抓取了
 抓取之前首先要登录，执行登录命令，保存为本地cookie文件以备后续测试使用，有了登录文件便可以直接使用脚本进行抓取关键词了
 
-# 流程
-具体流程参考我的简书博文 [百度指数抓取 selenium 💗 Keras](https://www.jianshu.com/p/5f29bc4552e4)
-
 # 模型数据生成
 模型使用tensorflow作为后端进行训练，这里简单说下怎么生成训练和测试样本,切换到model目录,运行下面的脚本
 ```
